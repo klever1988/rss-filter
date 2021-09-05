@@ -1,6 +1,6 @@
 <?php
 
-error_reporting(0);
+error_reporting(1);
 header('Content-Type: text/xml; charset=utf-8');
 
 include 'rss-filter.php';

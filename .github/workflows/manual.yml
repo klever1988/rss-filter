@@ -1,0 +1,20 @@
+
+name: Manual workflow
+
+on:
+  push:
+    branch:
+      master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: send files
+      run: |
+        eval `ssh-agent`
+        echo ${{ secrets.sshkey }} | base64 --decode | ssh-add -
+        rsync -avz -e "ssh -o StrictHostKeyChecking=no" . root@${{secrets.boxip}}:/raid/wwwphp

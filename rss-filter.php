@@ -39,6 +39,7 @@ class RssFilter {
     $xmlDoc = new DOMDocument();
     $source = trim(file_get_contents($source));
     $xmlDoc->loadXML($source);
+    $cookie=require('cookie.php');
 
     if ($xmlDoc->getElementsByTagName('feed')->length) {
       $type = 'atom';
@@ -87,6 +88,16 @@ class RssFilter {
         $item = $items->item($i);
         $title = htmlspecialchars($this->getAttribute($item->getElementsByTagName('title')));
         $link = htmlspecialchars($this->getAttribute($item->getElementsByTagName('link')));
+        $context = stream_context_create([
+          "http" => [
+              "method" => "GET",
+              "header" => "Accept-languange: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6\r\n" .
+              "Cookie: $cookie[hdsky]\r\n"
+          ]
+        ]);
+        if (strpos(file_get_contents($link, false, $context),'免费')===false){
+          continue;
+        }
         $description1 = htmlspecialchars($this->getAttribute($item->getElementsByTagName('description')));
         $description2 = htmlspecialchars($this->getAttribute($item->getElementsByTagName('encoded')));
         $description = $description1 ? $description1 : $description2;
